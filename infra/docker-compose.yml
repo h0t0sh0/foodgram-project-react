@@ -1,6 +1,13 @@
 version: '3.8'
 services:
 
+  database:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    restart: always
   frontend:
     build:
       context: ../frontend
@@ -13,6 +20,10 @@ services:
     volumes:
       - media_value:/app/media/
       - static_value:/app/static/
+    env_file:
+      - ./.env
+    depends_on:
+      - database
   nginx:
     image: nginx:1.19.3
     ports:
@@ -27,3 +38,4 @@ services:
 volumes:
   media_value:
   static_value:
+  postgres_data:

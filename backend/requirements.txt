@@ -25,6 +25,7 @@ mccabe==0.7.0
 oauthlib==3.2.0
 Pillow==9.2.0
 platformdirs==2.5.2
+psycopg2-binary==2.9.4
 pycparser==2.21
 PyJWT==2.4.0
 pylint==2.14.5
