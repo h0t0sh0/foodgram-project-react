@@ -12,3 +12,7 @@ password: ]=[-p0o9
 Администратор:
 email: admin@admin.ru
 password: ]=[-p0o9
+
+**API**
+Документация доступна по адресу:
+http://51.250.12.38/api/docs/
