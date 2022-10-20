@@ -12,11 +12,15 @@ class RecipeFilter(FilterSet):
         method='get_is_in_shopping_cart'
     )
 
-    tags = filters.ModelMultipleChoiceFilter(
-        field_name='tags__slug',
-        lookup_expr='iexact',
-        to_field_name='slug',
-        queryset=Tag.objects.all()
+    # tags = filters.ModelMultipleChoiceFilter(
+    #     field_name='tags__slug',
+    #     lookup_expr='iexact',
+    #     to_field_name='slug',
+    #     queryset=Tag.objects.all()
+    # )
+
+    tags = filters.AllValuesMultipleFilter(
+        field_name='tags__slug'
     )
 
     class Meta:
