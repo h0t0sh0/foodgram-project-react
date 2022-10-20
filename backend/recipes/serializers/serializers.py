@@ -3,7 +3,6 @@
 import base64
 
 from django.core.files.base import ContentFile
-
 # from django_filters.rest_framework.filters import ModelMultipleChoiceFilter
 from recipes.models import (FavoriteRecipe, Ingredient, IngredientRecipe,
                             Recipe, ShoppingCart, Tag)
@@ -117,7 +116,10 @@ class RecipeModifySerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    author = UserCustomSerializer()
+    # author = UserCustomSerializer()
+    author = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
     tags = TagSerializer(
         read_only=True,
         many=True,

@@ -24,9 +24,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'simple_string')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+if os.getenv('LOCAL_DEBUG_RUN', False):
+    DEBUG = True
+
 
 ALLOWED_HOSTS = ['51.250.12.38', 'backend']
-
+if DEBUG:
+    ALLOWED_HOSTS.append('localhost')
 
 # Application definition
 
@@ -79,13 +83,6 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
@@ -96,6 +93,14 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5423')
     }
 }
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation
@@ -128,18 +133,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
 STATIC_URL = 'static_foodgram/'
 STATIC_ROOT = os.path.join(BASE_DIR, STATIC_URL)
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -162,5 +160,9 @@ DJOSER = {
     'PERMISSIONS': {
         'user_list': ('rest_framework.permissions.AllowAny',),
         'user': ('rest_framework.permissions.IsAuthenticated',),
+    },
+    'SERIALIZERS': {
+        'user': 'users.serializers.UserCustomSerializer',
+        'current_user': 'users.serializers.UserCustomSerializer',
     }
 }

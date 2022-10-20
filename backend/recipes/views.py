@@ -1,8 +1,8 @@
 """Recipe view module."""
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-# from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT)
@@ -12,6 +12,7 @@ from recipes.filters import NameSearch, RecipeFilter
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Tag)
 from recipes.pagination import LimitedPagination
+from recipes.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from recipes.serializers import (FavoritesSerializer, IngredientSerializer,
                                  RecipeModifySerializer, RecipeSerializer,
                                  ShoppingCartSerializer, TagSerializer)
@@ -23,11 +24,10 @@ class RecipeView(ModelViewSet):
     """Recepies View"""
     pagination_class = LimitedPagination
     queryset = Recipe.objects.all()
-    # filter_backends = (DjangoFilterBackend, )
     filterset_class = RecipeFilter
-    # filterset_fields = ['author', 'tags']
     search_fields = ['is_favorited', 'is_in_shopping_cart']
     serializer_class = RecipeSerializer
+    permission_classes = [IsOwnerOrReadOnly, ]
 
     def get_serializer_class(self):
         if self.request.method in READ_METHODS:
@@ -107,7 +107,8 @@ class RecipeView(ModelViewSet):
     @action(
         methods=['post', 'delete'],
         detail=True,
-        serializer_class=FavoritesSerializer
+        serializer_class=FavoritesSerializer,
+        permission_classes=(IsAuthenticated, )
     )
     def favorite(self, request, pk=None):
         if request.method == 'POST':
