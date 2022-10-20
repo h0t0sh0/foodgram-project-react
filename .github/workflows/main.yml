@@ -4,6 +4,7 @@ on: [push]
 
 jobs:
   tests:
+    name: Run tests and checks
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -47,6 +48,7 @@ jobs:
           context: ./backend/
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_final:latest
   deploy:
+    name: Deploy to production
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
     if: github.ref == 'refs/heads/master'
