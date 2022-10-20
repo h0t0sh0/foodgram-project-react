@@ -12,7 +12,7 @@ from recipes.filters import NameSearch, RecipeFilter
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Tag)
 from recipes.pagination import LimitedPagination
-from recipes.permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
+from recipes.permissions import IsOwnerOrReadOnly
 from recipes.serializers import (FavoritesSerializer, IngredientSerializer,
                                  RecipeModifySerializer, RecipeSerializer,
                                  ShoppingCartSerializer, TagSerializer)
