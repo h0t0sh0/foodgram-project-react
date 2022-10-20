@@ -1,7 +1,7 @@
 """Recipe view module."""
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework.backends import DjangoFilterBackend
+# from django_filters.rest_framework.backends import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
