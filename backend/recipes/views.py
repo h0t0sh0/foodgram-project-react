@@ -24,7 +24,8 @@ class RecipeView(ModelViewSet):
     pagination_class = LimitedPagination
     queryset = Recipe.objects.all()
     filter_backends = (DjangoFilterBackend, )
-    filterset_class = RecipeFilter
+    filter_class = RecipeFilter
+    filterset_fields = ['author', 'tags']
     search_fields = ['is_favorited', 'is_in_shopping_cart']
     serializer_class = RecipeSerializer
 
