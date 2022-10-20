@@ -2,12 +2,12 @@
     {
     "name": "Завтрак",
     "color": "#0000FF",
-    "slug": "dinner"
+    "slug": "breakfast"
 },
     {
     "name": "Обед",
     "color": "#FFA500",
-    "slug": "dinner"
+    "slug": "lunch"
 },
     {
     "name": "Ужин",
