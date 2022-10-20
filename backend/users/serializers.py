@@ -23,10 +23,12 @@ class UserCustomSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
-        return SubscribeUser.objects.filter(
-            user=user,
-            author=obj.id
-        ).exists()
+        if user.id:
+            return SubscribeUser.objects.filter(
+                user=user,
+                author=obj.id
+            ).exists()
+        return False
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
