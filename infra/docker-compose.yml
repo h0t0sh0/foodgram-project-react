@@ -18,7 +18,7 @@ services:
     restart: always
     volumes:
       - media_value:/app/media/
-      - static_value:/app/static/
+      - static_value:/app/static_foodgram/
       - redoc_data:/app/docs/
     env_file:
       - ./.env
