@@ -75,6 +75,9 @@ class Recipe(AbstractModel):
     class Meta:
         ordering = ('-id', )
 
+    def _favorites_count(self):
+        return self.favorites.count()
+
     def __str__(self):
         return f'Recepie: {self.name}'
 
