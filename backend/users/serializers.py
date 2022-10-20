@@ -2,6 +2,7 @@ from djoser.serializers import UserSerializer
 from recipes.models import Recipe
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
 from users.models import SubscribeUser, User
 
 
@@ -28,7 +29,6 @@ class UserCustomSerializer(UserSerializer):
         ).exists()
 
 
-
 class SubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -41,6 +41,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                 message='Already subscribed'
             )
         ]
+
 
 class RecipeShortSerializer(serializers.ModelSerializer):
 

@@ -1,0 +1,6 @@
+[flake8]
+max-line-length = 120
+ignore =
+    R503, I004, I001
+per-file-ignores =
+    */migrations/*:E501,I001

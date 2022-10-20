@@ -18,7 +18,7 @@ jobs:
         pip install -r backend/requirements.txt
     - name: Test with flake8 # and django tests in future
       run: |
-        python -m flake8
+        python -m flake8 ./backend
         # TODO make unit tests
         # pytest
         # cd backend/
