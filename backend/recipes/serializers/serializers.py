@@ -117,9 +117,6 @@ class RecipeModifySerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = UserCustomSerializer()
-    # author = serializers.HiddenField(
-    #     default=serializers.CurrentUserDefault()
-    # )
     tags = TagSerializer(
         read_only=True,
         many=True,
