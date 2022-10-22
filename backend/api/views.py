@@ -1,10 +1,4 @@
-"""Recipe view module."""
-from api.permissions import IsOwnerOrReadOnly
-from api.serializers import (FavoritesSerializer, IngredientSerializer,
-                             RecipeModifySerializer, RecipeSerializer,
-                             ShoppingCartSerializer,
-                             SubscriptionListSerializer,
-                             SubscriptionSerializer, TagSerializer)
+"""Api view module."""
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
@@ -19,6 +13,13 @@ from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND)
 from rest_framework.viewsets import ModelViewSet
 from users.models import SubscribeUser, User
+
+from api.permissions import IsOwnerOrReadOnly
+from api.serializers import (FavoritesSerializer, IngredientSerializer,
+                             RecipeModifySerializer, RecipeSerializer,
+                             ShoppingCartSerializer,
+                             SubscriptionListSerializer,
+                             SubscriptionSerializer, TagSerializer)
 
 
 class RecipeView(ModelViewSet):
@@ -73,12 +74,7 @@ class RecipeView(ModelViewSet):
             status=HTTP_200_OK
         )
 
-    @action(
-        methods=['post', 'delete'],
-        detail=True,
-        serializer_class=ShoppingCartSerializer
-    )
-    def shopping_cart(self, request, pk=None):
+    def user_action(self, request, model, serializer, pk):
         if request.method == 'POST':
             user = request.user
             data = {
@@ -86,24 +82,37 @@ class RecipeView(ModelViewSet):
                 'user': user.id
             }
             context = {'request': request}
-            serializer = ShoppingCartSerializer(
+            serializer_action = serializer(
                 data=data,
                 context=context
             )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=HTTP_201_CREATED)
+            serializer_action.is_valid(raise_exception=True)
+            serializer_action.save()
+            return Response(serializer_action.data, status=HTTP_201_CREATED)
 
         if request.method == 'DELETE':
             user = request.user
             recipe = get_object_or_404(Recipe, pk=pk)
-            cart = ShoppingCart.objects.get(
+            cart = model.objects.get(
                 user=user,
                 recipe=recipe
             )
             if cart:
                 cart.delete()
             return Response(status=HTTP_204_NO_CONTENT)
+
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        serializer_class=ShoppingCartSerializer
+    )
+    def shopping_cart(self, request, pk=None):
+        self.user_action(
+            request,
+            ShoppingCart,
+            ShoppingCartSerializer,
+            pk
+        )
 
     @action(
         methods=['post', 'delete'],
@@ -112,31 +121,12 @@ class RecipeView(ModelViewSet):
         permission_classes=(IsAuthenticated, )
     )
     def favorite(self, request, pk=None):
-        if request.method == 'POST':
-            user = request.user
-            data = {
-                'recipe': pk,
-                'user': user.id
-            }
-            context = {'request': request}
-            serializer = FavoritesSerializer(
-                data=data,
-                context=context
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=HTTP_201_CREATED)
-
-        if request.method == 'DELETE':
-            user = request.user
-            recipe = get_object_or_404(Recipe, pk=pk)
-            cart = FavoriteRecipe.objects.get(
-                user=user,
-                recipe=recipe
-            )
-            if cart:
-                cart.delete()
-            return Response(status=HTTP_204_NO_CONTENT)
+        self.user_action(
+            request,
+            FavoriteRecipe,
+            FavoritesSerializer,
+            pk
+        )
 
     @action(
         methods=['get', ],
