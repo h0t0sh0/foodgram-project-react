@@ -121,7 +121,7 @@ class RecipeModifySerializer(serializers.ModelSerializer):
 
     def validate_tags(self, value):
         if not value:
-            raise serializers.ValidationError('Minimun one tag required')
+            raise serializers.ValidationError(EMPTY_ERROR.format('tag'))
         return value
 
     @staticmethod
@@ -145,6 +145,7 @@ class RecipeModifySerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.tags.clear()
+        instance.tags.set(validated_data['tags'])
         instance.ingredients.clear()
         ingredients = validated_data.pop('ingredients')
         self.add_ingredients(instance, ingredients)
