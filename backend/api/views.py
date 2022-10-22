@@ -152,8 +152,8 @@ class RecipeView(ModelViewSet):
 
         shopping_cart = '\n'.join(
             [
-                f'{ingredient["ingredient__name"]} - {ingredient["sum_amount"]} '
-                f'{ingredient["ingredient__measurement_unit"]}'
+                f'{ingredient["ingredient__name"]}({ingredient["ingredient__measurement_unit"]})'
+                f' - {ingredient["sum_amount"]} '
                 for ingredient in ingredients
             ]
         )
