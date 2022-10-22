@@ -106,7 +106,7 @@ class RecipeView(ModelViewSet):
         serializer_class=ShoppingCartSerializer
     )
     def shopping_cart(self, request, pk=None):
-        self.user_action(
+        return self.user_action(
             request,
             ShoppingCart,
             ShoppingCartSerializer,
@@ -120,7 +120,7 @@ class RecipeView(ModelViewSet):
         permission_classes=(IsAuthenticated, )
     )
     def favorite(self, request, pk=None):
-        self.user_action(
+        return self.user_action(
             request,
             FavoriteRecipe,
             FavoritesSerializer,
