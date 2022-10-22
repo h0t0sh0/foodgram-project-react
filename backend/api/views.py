@@ -1,4 +1,5 @@
 """Api view module."""
+from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 
@@ -22,7 +23,7 @@ from api.serializers import (
     TagSerializer
 )
 from recipes.filters import NameSearch, RecipeFilter
-from recipes.models import FavoriteRecipe, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import FavoriteRecipe, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
 from recipes.pagination import LimitedPagination
 from users.models import SubscribeUser, User
 
@@ -139,28 +140,25 @@ class RecipeView(ModelViewSet):
     )
     def download_shopping_cart(self, request, pk=None):
         user = request.user
-        recipes_in_cart = user.shopping_cart.filter(user=user)
-        ingredients = []
-        for cart in recipes_in_cart:
-            for ingr in cart.recipe.ingredient_recipe.filter(recipe=cart.recipe):
-                ingredients.append(ingr)
-        shopping_cart = {}
-        for ingredient in ingredients:
-            name = ingredient.ingredient.name
-            measurement_unit = ingredient.ingredient.measurement_unit
-            amount = ingredient.amount
-            current_state = shopping_cart.get(
-                name, {'amount': 0, 'measurement_unit': measurement_unit}
-            )
-            current_state['amount'] = current_state.get('amount', 0) + amount
-            shopping_cart[name] = current_state
-        result = ''
-        for ingredient, values in shopping_cart.items():
-            result += (
-                f'{ingredient}({values["measurement_unit"]})'
-                f' - {values["amount"]}\n'
-            )
-        content = HttpResponse(result, 'Content-Type: text/plain,charset=utf8')
+
+        ingredients = IngredientRecipe.objects.filter(
+            recipe__in_shopping_cart__user=user
+        ).order_by(
+            'ingredient__name'
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(sum_amount=Sum('amount'))
+
+        shopping_cart = '\n'.join(
+            [
+                f'{ingredient["ingredient__name"]} - {ingredient["sum_amount"]} '
+                f'{ingredient["ingredient__measurement_unit"]}'
+                for ingredient in ingredients
+            ]
+        )
+
+        content = HttpResponse(shopping_cart, 'Content-Type: text/plain,charset=utf8')
         content['Content-Disposition'] = 'attachment;filename="shopping_list.txt"'
         return content
 
