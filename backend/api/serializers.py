@@ -115,8 +115,6 @@ class RecipeModifySerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError(EMPTY_ERROR.format('ingredient'))
         for item in value:
-            if item['id'] < 0:
-                raise serializers.ValidationError(POSITIVE_ERROR.format('itgredient_id'))
             if item['amount'] < 0:
                 raise serializers.ValidationError(POSITIVE_ERROR.format('itgredient_amount'))
         return value
@@ -124,8 +122,6 @@ class RecipeModifySerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         if not value:
             raise serializers.ValidationError('Minimun one tag required')
-        if min(value) < 0:
-            raise serializers.ValidationError('Expecting tag_id as positive number')
         return value
 
     @staticmethod
