@@ -9,6 +9,9 @@ from drf_extra_fields.fields import Base64ImageField
 from recipes.models import FavoriteRecipe, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
 from users.models import SubscribeUser, User
 
+POSITIVE_ERROR = 'Expecting {} as positive number'
+EMPTY_ERROR = 'Minimun one {} required'
+
 
 class UserCustomSerializer(UserSerializer):
 
@@ -102,6 +105,28 @@ class RecipeModifySerializer(serializers.ModelSerializer):
             'cooking_time',
             'author'
         ]
+
+    def validate_cooking_time(self, value):
+        if int(value) < 1:
+            raise serializers.ValidationError(POSITIVE_ERROR.format('cooking_time'))
+        return value
+
+    def validate_ingredients(self, value):
+        if not value:
+            raise serializers.ValidationError(EMPTY_ERROR.format('ingredient'))
+        for item in value:
+            if item['id'] < 0:
+                raise serializers.ValidationError(POSITIVE_ERROR.format('itgredient_id'))
+            if item['amount'] < 0:
+                raise serializers.ValidationError(POSITIVE_ERROR.format('itgredient_amount'))
+        return value
+
+    def validate_tags(self, value):
+        if not value:
+            raise serializers.ValidationError('Minimun one tag required')
+        if min(value) < 0:
+            raise serializers.ValidationError('Expecting tag_id as positive number')
+        return value
 
     @staticmethod
     def add_ingredients(recipe, ingredients):
