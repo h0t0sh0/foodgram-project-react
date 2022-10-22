@@ -1,23 +1,24 @@
 """Recipe view module."""
+from api.permissions import IsOwnerOrReadOnly
+from api.serializers import (FavoritesSerializer, IngredientSerializer,
+                             RecipeModifySerializer, RecipeSerializer,
+                             ShoppingCartSerializer,
+                             SubscriptionListSerializer,
+                             SubscriptionSerializer, TagSerializer)
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_204_NO_CONTENT)
-from rest_framework.viewsets import ModelViewSet
-
+from djoser.views import UserViewSet
 from recipes.filters import NameSearch, RecipeFilter
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe, ShoppingCart,
                             Tag)
 from recipes.pagination import LimitedPagination
-from recipes.permissions import IsOwnerOrReadOnly
-from recipes.serializers import (FavoritesSerializer, IngredientSerializer,
-                                 RecipeModifySerializer, RecipeSerializer,
-                                 ShoppingCartSerializer, TagSerializer)
-
-READ_METHODS = ('GET', 'HEAD', 'OPTIONS')
+from rest_framework.decorators import action
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND)
+from rest_framework.viewsets import ModelViewSet
+from users.models import SubscribeUser, User
 
 
 class RecipeView(ModelViewSet):
@@ -30,7 +31,7 @@ class RecipeView(ModelViewSet):
     permission_classes = [IsOwnerOrReadOnly, ]
 
     def get_serializer_class(self):
-        if self.request.method in READ_METHODS:
+        if self.request.method in SAFE_METHODS:
             return RecipeSerializer
         return RecipeModifySerializer
 
@@ -183,3 +184,60 @@ class IngridientView(ModelViewSet):
     pagination_class = None
     filter_backends = [NameSearch, ]
     search_fields = ['^name']
+
+
+class UserView(UserViewSet):
+    pagination_class = LimitedPagination
+
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        serializer_class=SubscriptionSerializer
+    )
+    def subscribe(self, request, id=None):
+        user = request.user
+        author = get_object_or_404(User, pk=id)
+        if request.method == 'POST':
+            data = {
+                'user': user.id,
+                'author': author.id
+            }
+            context = {'request': request}
+
+            serializer = SubscriptionSerializer(
+                data=data,
+                context=context
+            )
+
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+        if request.method == 'DELETE':
+            try:
+                SubscribeUser.objects.get(user=user, author=author).delete()
+            except SubscribeUser.DoesNotExist:
+                data = {'detail': 'Page not found.'}
+                return Response(data, status=HTTP_404_NOT_FOUND)
+            return Response(status=HTTP_204_NO_CONTENT)
+
+    def get_subscribtion_serializer(self, *args, **kwargs):
+        kwargs.setdefault('context', self.get_serializer_context())
+        kwargs['context']['recipes_limit'] = self.request.query_params.get('recipes_limit')
+        return SubscriptionListSerializer(*args, **kwargs)
+
+    @action(
+        methods=['get'],
+        detail=False,
+        permission_classes=[IsAuthenticated, ]
+    )
+    def subscriptions(self, request):
+        user = request.user
+        queryset = User.objects.filter(
+            subscriber_author__user=user
+        )
+        page = self.paginate_queryset(queryset)
+        if page:
+            serializer = self.get_subscribtion_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_subscribtion_serializer(queryset, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)

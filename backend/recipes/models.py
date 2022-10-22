@@ -55,13 +55,9 @@ class Recipe(AbstractModel):
         editable=True
     )
 
-    text = models.TextField(
-        'Description'
-    )
+    text = models.TextField('Description')
 
-    tags = models.ManyToManyField(
-        Tag
-    )
+    tags = models.ManyToManyField(Tag)
 
     cooking_time = models.PositiveIntegerField(
         'Cooking time in minutes'
@@ -79,7 +75,7 @@ class Recipe(AbstractModel):
         return self.favorites.count()
 
     def __str__(self):
-        return f'Recepie: {self.name}'
+        return f'Recipe: {self.name}'
 
 
 class IngredientRecipe(models.Model):

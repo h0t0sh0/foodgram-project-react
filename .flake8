@@ -1,6 +1,30 @@
+# [flake8]
+# max-line-length = 120
+# ignore =
+#     R503, I004, I001
+# per-file-ignores =
+#     */migrations/*:E501,I001
+
+
 [flake8]
 max-line-length = 120
 ignore =
-    R503, I004, I001
+    W503,
+    R503
+exclude =
+    tests/,
+    */migrations/,
+    venv/,
+    env/
 per-file-ignores =
-    */migrations/*:E501,I001
+    */settings.py:E501
+max-complexity = 10
+[isort]
+multi_line_output = 3
+line_length = 120
+default_section = THIRDPARTY
+known_first_party = backend/
+known_local_folder = backend/
+known_django = django
+known_rest_framework = rest_framework
+sections = FUTURE,STDLIB,DJANGO,REST_FRAMEWORK,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
