@@ -6,7 +6,14 @@ from rest_framework.validators import UniqueTogetherValidator
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 
-from recipes.models import FavoriteRecipe, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
+from recipes.models import (
+    FavoriteRecipe,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
 from users.models import SubscribeUser, User
 
 POSITIVE_ERROR = 'Expecting {} as positive number'

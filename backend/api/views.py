@@ -6,7 +6,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_201_CREATED,
+    HTTP_204_NO_CONTENT,
+    HTTP_404_NOT_FOUND
+)
 from rest_framework.viewsets import ModelViewSet
 
 from djoser.views import UserViewSet
@@ -23,7 +28,14 @@ from api.serializers import (
     TagSerializer
 )
 from recipes.filters import NameSearch, RecipeFilter
-from recipes.models import FavoriteRecipe, Ingredient, IngredientRecipe, Recipe, ShoppingCart, Tag
+from recipes.models import (
+    FavoriteRecipe,
+    Ingredient,
+    IngredientRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
 from recipes.pagination import LimitedPagination
 from users.models import SubscribeUser, User
 
@@ -150,13 +162,11 @@ class RecipeView(ModelViewSet):
             'ingredient__measurement_unit'
         ).annotate(sum_amount=Sum('amount'))
 
-        shopping_cart = '\n'.join(
-            [
-                f'{ingredient["ingredient__name"]}({ingredient["ingredient__measurement_unit"]})'
-                f' - {ingredient["sum_amount"]} '
-                for ingredient in ingredients
-            ]
-        )
+        shopping_cart = '\n'.join([
+            f'{ingredient["ingredient__name"]}({ingredient["ingredient__measurement_unit"]})'
+            f' - {ingredient["sum_amount"]} '
+            for ingredient in ingredients
+        ])
 
         content = HttpResponse(shopping_cart, 'Content-Type: text/plain,charset=utf8')
         content['Content-Disposition'] = 'attachment;filename="shopping_list.txt"'

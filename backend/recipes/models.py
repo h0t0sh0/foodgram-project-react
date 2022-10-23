@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from users.models import User
@@ -61,7 +62,10 @@ class Recipe(AbstractModel):
     tags = models.ManyToManyField(Tag)
 
     cooking_time = models.PositiveIntegerField(
-        'Cooking time in minutes'
+        'Cooking time in minutes',
+        validators=[
+            MinValueValidator(1, message='cooking_time is too small')
+        ]
     )
 
     ingredients = models.ManyToManyField(
@@ -95,7 +99,10 @@ class IngredientRecipe(models.Model):
     )
 
     amount = models.PositiveIntegerField(
-        'Ingredient amount'
+        'Ingredient amount',
+        validators=[
+            MinValueValidator(1, message='amount is too small')
+        ]
     )
 
     class Meta:
