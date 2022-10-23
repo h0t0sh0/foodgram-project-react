@@ -69,6 +69,10 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
             'amount',
         ]
 
+    def validate_amount(self, value):
+        if value < 1:
+            raise serializers.ValidationError(POSITIVE_ERROR.format('amount'))
+
 
 class IngredientWriteRecipeSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
