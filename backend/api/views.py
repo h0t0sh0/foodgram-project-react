@@ -3,7 +3,6 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import filters
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
@@ -15,7 +14,6 @@ from rest_framework.status import (
 )
 from rest_framework.viewsets import ModelViewSet
 
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 
 from api.permissions import IsOwnerOrReadOnly
@@ -29,7 +27,7 @@ from api.serializers import (
     SubscriptionSerializer,
     TagSerializer
 )
-from recipes.filters import NameSearch, RecipeFilter
+from recipes.filters import RecipeFilter
 from recipes.models import (
     FavoriteRecipe,
     Ingredient,
