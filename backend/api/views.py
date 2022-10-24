@@ -186,7 +186,7 @@ class IngridientView(ModelViewSet):
     serializer_class = IngredientSerializer
     pagination_class = None
     filter_backends = [NameSearch, ]
-    search_fields = ['^name']
+    search_fields = ['@name']
 
 
 class UserView(UserViewSet):

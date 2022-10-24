@@ -54,4 +54,4 @@ class RecipeFilter(FilterSet):
 
 
 class NameSearch(SearchFilter):
-    search_param = '@name'
+    search_param = 'name'
