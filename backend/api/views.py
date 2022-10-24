@@ -182,15 +182,12 @@ class TagView(ModelViewSet):
 
 class IngridientView(ModelViewSet):
     """Ingredient View"""
-    # queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
-    # filter_backends = [DjangoFilterBackend, NameSearch, ]
-    # search_fields = ['name', ]
 
     def get_queryset(self):
         query = self.request.GET.get('name')
-        return Ingredient.objects.filter(name__search=query)
+        return Ingredient.objects.filter(name__startswith=query)
 
 
 class UserView(UserViewSet):
