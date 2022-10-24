@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404
 
+from rest_framework import filters
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
@@ -14,6 +15,7 @@ from rest_framework.status import (
 )
 from rest_framework.viewsets import ModelViewSet
 
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 
 from api.permissions import IsOwnerOrReadOnly
@@ -182,10 +184,15 @@ class TagView(ModelViewSet):
 
 class IngridientView(ModelViewSet):
     """Ingredient View"""
-    queryset = Ingredient.objects.all()
+    # queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     pagination_class = None
-    filter_class = NameSearch
+    # filter_backends = [DjangoFilterBackend, NameSearch, ]
+    # search_fields = ['name', ]
+
+    def get_queryset(self):
+        query = self.request.GET.get('name')
+        return Ingredient.objects.filter(name__search=query)
 
 
 class UserView(UserViewSet):
